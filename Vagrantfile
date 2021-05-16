@@ -25,8 +25,12 @@ MACHINES = {
                         :dfile => './sata4.vdi',
                         :size => 250, # Megabytes
                         :port => 4
-                }
-
+                },
+		:sata5 => {
+			:dfile => './sata5.vdi',
+			:size => 250,
+			:port => 5
+		}
 	}
 
 		
@@ -63,10 +67,14 @@ Vagrant.configure("2") do |config|
                      end
                   end
           end
+	  box.vm.provision "file", source: "raid.sh", destination: "raid.sh"
+          
  	  box.vm.provision "shell", inline: <<-SHELL
 	      mkdir -p ~root/.ssh
               cp ~vagrant/.ssh/auth* ~root/.ssh
+	      cp ~vagrant/raid.sh ~root
 	      yum install -y mdadm smartmontools hdparm gdisk
+              bash /root/raid.sh
   	  SHELL
 
       end
